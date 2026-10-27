@@ -1,0 +1,15 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# PyInstaller build files
+build/
+*.spec
+
+# User local config (preserve defaults)
+config.json
