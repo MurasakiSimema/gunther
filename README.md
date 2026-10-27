@@ -46,10 +46,10 @@ Un piccolo compagno virtuale dedicato a Gunther, creato con affetto per passeggi
 
 ## 🚀 Come Avviarlo
 
-### Metodo 1: File Eseguibile Autonomo (Consigliato per lei!)
-Trovi il file pronto all'uso in `dist/Gunther.exe`.
-- **100% Autonomo e Pulito**: Non genera né legge alcun file `.json` su disco; impostazioni, animazioni e messaggi sono tutti integrati direttamente all'interno dell'eseguibile.
-- Le basterà fare doppio clic su `Gunther.exe` e Gunther comparirà subito sullo schermo senza installare nulla!
+### Metodo 1: Download da GitHub Releases (Consigliato per lei!)
+Scarica l'ultimo file `Gunther.exe` pronto all'uso direttamente dalla pagina **Releases** del repository GitHub.
+- **100% Autonomo e Pulito**: Non genera né legge alcun file su disco; impostazioni, animazioni e messaggi sono tutti integrati direttamente all'interno dell'eseguibile.
+- Le basterà fare doppio clic su `Gunther.exe` e Gunther comparirà subito sullo schermo senza dover installare nulla!
 
 ### Metodo 2: Doppio Clic sullo Script
 Fai doppio clic su `Avvia_Gunther.bat` (avvia l'app in background senza finestre nere di terminale).

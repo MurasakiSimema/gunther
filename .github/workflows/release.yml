@@ -1,0 +1,47 @@
+name: Release Gunther
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag della release (es. v1.0.0)"
+        required: true
+        default: "v1.0.0"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Python & Dependencies
+        run: |
+          uv python install 3.12
+          uv sync
+
+      - name: Build Gunther Executable
+        run: |
+          uv run build.py --gunther-only
+
+      - name: Create GitHub Release and Upload Exe
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/Gunther.exe
+          tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
+          name: Gunther Desktop Companion ${{ github.event.inputs.tag_name || github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true

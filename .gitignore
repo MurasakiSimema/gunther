@@ -9,6 +9,8 @@ __pycache__/
 
 # PyInstaller build files
 build/
+build_staging/
+dist/
 *.spec
 
 # User local config (preserve defaults)
