@@ -1,4 +1,4 @@
-name: Release Gunther
+name: Release Companions
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: "Tag della release (es. v1.0.0)"
+        description: "Tag base della release (es. v1.0.0)"
         required: true
         default: "v1.0.0"
 
@@ -16,7 +16,40 @@ permissions:
 
 jobs:
   build-and-release:
+    name: Build & Release ${{ matrix.target }}
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: gunther
+            exe_file: dist/Gunther_Solo.exe
+            tag_suffix: -gunther
+            release_title: "Gunther Solo 🐹"
+            description: |
+              ### 🐹 Gunther Desktop Companion - Versione Esclusiva
+              Versione autonoma 100% dedicata a Gunther col suo manto originale grigio scuro caldo.
+              - Nessuna installazione richiesta: scarica ed esegui `Gunther_Solo.exe`!
+              - 100% autonomo e leggero, perfetto per chi desidera solo Gunther classico.
+          - target: criceti
+            exe_file: dist/Gunther_Criceti.exe
+            tag_suffix: -criceti
+            release_title: "Gunther & Criceti 🐹🌰 (Tutti i Manti)"
+            description: |
+              ### 🌰 Gunther & Criceti - Tutti i 5 Manti
+              Versione completa con tutte le 5 varianti di manto di criceto (Gunther, Dorato Siriano, Bianco Invernale, Grigio Zaffiro, Panda Pezzato).
+              - Cambio manto disponibile in tempo reale dal menu a clic destro.
+              - Scarica ed esegui `Gunther_Criceti.exe`!
+          - target: paperelle
+            exe_file: dist/Paperella.exe
+            tag_suffix: -paperelle
+            release_title: "Paperella Desktop Companion 🦆⚪ (Tutte le Paperelle)"
+            description: |
+              ### 🦆 Paperella Desktop Companion - Tutte le Paperelle
+              Versione autonoma a tema paperella con 6 varianti (inclusa la Paperella Bianca Pekin, Gialla Classica, Germano Reale, Rosa Pastello, Verde Menta, Cioccolato).
+              - Animazioni a tema paperella: camminata dondolante (*waddle*), *duck loaf*, sgranocchiata di pisellini dolci.
+              - Pensieri dolci, beccate, coccole e menu interamente personalizzati per le paperelle.
+              - Scarica ed esegui `Paperella.exe`!
 
     steps:
       - name: Checkout repository
@@ -32,16 +65,29 @@ jobs:
           uv python install 3.12
           uv sync
 
-      - name: Build Gunther Executable
+      - name: Compute Release Tag
+        id: tag_info
+        shell: bash
         run: |
-          uv run build.py --gunther-only
+          RAW_TAG="${{ github.event.inputs.tag_name || github.ref_name }}"
+          BASE_TAG=$(echo "$RAW_TAG" | sed -E 's/-(gunther|criceti|paperelle)$//')
+          TARGET_TAG="${BASE_TAG}${{ matrix.tag_suffix }}"
+          echo "base_tag=${BASE_TAG}" >> $GITHUB_OUTPUT
+          echo "target_tag=${TARGET_TAG}" >> $GITHUB_OUTPUT
+
+      - name: Build Executable and Generate Sprites
+        run: |
+          uv run build.py --target ${{ matrix.target }} --rebuild-sprites
 
       - name: Create GitHub Release and Upload Exe
         uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: dist/Gunther.exe
-          tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
-          name: Gunther Desktop Companion ${{ github.event.inputs.tag_name || github.ref_name }}
+          files: ${{ matrix.exe_file }}
+          tag_name: ${{ steps.tag_info.outputs.target_tag }}
+          name: "${{ matrix.release_title }} ${{ steps.tag_info.outputs.base_tag }}"
+          body: ${{ matrix.description }}
           draft: false
           prerelease: false
-          generate_release_notes: true
+          generate_release_notes: false

@@ -1,6 +1,11 @@
+from gunther.species import detect_initial_species
+
+_sp, _def_name, _def_pal = detect_initial_species()
+
 DEFAULT_CONFIG = {
-    "name": "Gunther",
-    "palette": "gunther",
+    "name": _def_name,
+    "species": _sp.id,
+    "palette": _def_pal,
     "scale": 1.0,  # 1.0 = ~108px, 0.75 = ~81px, 1.25 = ~135px, 1.5 = ~162px
     "always_on_top": True,
     "enable_thoughts": True,

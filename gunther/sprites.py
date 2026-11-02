@@ -24,8 +24,27 @@ class SpriteManager:
             self.cache.clear()
             self.load_sprites()
 
+    def find_palette_path(self, palette: str) -> str:
+        """Finds the directory for a palette, checking both direct path and category subfolders."""
+        # 1. Direct path check (e.g. 'criceto/gunther' or 'gunther')
+        direct = get_resource_path(os.path.join("assets", "sprites", palette))
+        if os.path.isdir(direct):
+            return direct
+
+        # 2. Check within all category subfolders (e.g. assets/sprites/criceto/gunther)
+        base_dir = get_resource_path(os.path.join("assets", "sprites"))
+        if os.path.exists(base_dir):
+            for sub in sorted(os.listdir(base_dir)):
+                sub_path = os.path.join(base_dir, sub)
+                if os.path.isdir(sub_path):
+                    candidate = os.path.join(sub_path, palette)
+                    if os.path.isdir(candidate):
+                        return candidate
+
+        return direct
+
     def load_sprites(self):
-        pal_path = get_resource_path(os.path.join("assets", "sprites", self.palette))
+        pal_path = self.find_palette_path(self.palette)
         if not os.path.exists(pal_path):
             print(f"Warning: palette folder {pal_path} not found!")
             return
@@ -50,15 +69,37 @@ class SpriteManager:
                 else:
                     print(f"Sprite not found: {file_path}")
 
-    def get_available_palettes(self) -> list[str]:
+    def get_categorized_palettes(self) -> dict[str, list[str]]:
+        """Returns all available palettes grouped by their category subfolder."""
         base_dir = get_resource_path(os.path.join("assets", "sprites"))
         if not os.path.exists(base_dir):
-            return [self.palette]
-        palettes = [
-            d for d in os.listdir(base_dir)
-            if os.path.isdir(os.path.join(base_dir, d))
-        ]
-        return palettes if palettes else [self.palette]
+            return {"default": [self.palette]}
+
+        categories = {}
+        for entry in sorted(os.listdir(base_dir)):
+            entry_path = os.path.join(base_dir, entry)
+            if not os.path.isdir(entry_path):
+                continue
+
+            has_pngs = any(f.endswith(".png") for f in os.listdir(entry_path) if os.path.isfile(os.path.join(entry_path, f)))
+            if has_pngs:
+                categories.setdefault("default", []).append(entry)
+            else:
+                sub_pals = [
+                    d for d in sorted(os.listdir(entry_path))
+                    if os.path.isdir(os.path.join(entry_path, d))
+                ]
+                if sub_pals:
+                    categories[entry] = sub_pals
+
+        return categories if categories else {"default": [self.palette]}
+
+    def get_available_palettes(self) -> list[str]:
+        categorized = self.get_categorized_palettes()
+        all_pals = []
+        for cat, pals in categorized.items():
+            all_pals.extend(pals)
+        return all_pals if all_pals else [self.palette]
 
     def get_frame(self, anim: str, index: int) -> QPixmap:
         frames = self.cache.get(anim, [])

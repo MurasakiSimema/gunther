@@ -18,7 +18,7 @@ Un piccolo compagno virtuale dedicato a Gunther, creato con affetto per passeggi
 
 - **Pensieri Dolci**:
   - Ogni tanto compare un fumetto delicato con frasi confortanti, ricordi d'idratazione e parole d'affetto.
-  - Tutti i messaggi sono integrati nel codice in [gunther/messages.py](file:///C:/Users/simem/Desktop/GIT/gunther/gunther/messages.py) e incorporati nell'eseguibile.
+  - Tutti i messaggi sono integrati nel codice in [gunther/messages.py](./gunther/messages.py) e incorporati nell'eseguibile.
 
 - **Varianti di Manto**:
   - 🐹 **Gunther (Manto Originale)**: Pelo grigio scuro caldo, pancino bianco candido e visetto pulito senza baffi.
@@ -63,22 +63,36 @@ uv run main.py
 
 ## 🔨 Come Compilare l'Eseguibile (.exe)
 
-Puoi ricompilare l'applicazione in qualsiasi momento usando lo script [build.py](file:///C:/Users/simem/Desktop/GIT/gunther/build.py).
+Puoi ricompilare l'applicazione in qualsiasi momento usando il comando unico [build.py](./build.py) specificando il target desiderato con il parametro `--target` (oppure avviando [Build.bat](./Build.bat) per il menu interattivo).
 
-### 🐹 Build con SOLO il colore Gunther (Consigliata)
-Per creare un eseguibile dedicato al 100% a Gunther (senza gli altri manti e senza la voce di cambio colore nel menu):
-
+### 🐹 1. Solo Gunther (Manto Originale Esclusivo)
+Crea un eseguibile dedicato al 100% a Gunther (senza manti alternativi):
 ```powershell
-uv run build.py --gunther-only
+uv run build.py --target gunther
 ```
-*(Oppure fai doppio clic sul file [Build_Gunther_Solo.bat](file:///C:/Users/simem/Desktop/GIT/gunther/Build_Gunther_Solo.bat))*
+*(Oppure doppio clic su [Build_Gunther_Solo.bat](./Build_Gunther_Solo.bat))*
 
-### 🎨 Build con TUTTI i manti
-Se preferisci includere tutte le varianti di colore alternative:
-
+### 🌰 2. Tutti i Criceti (5 Manti)
+Include tutte le varianti di colore dei criceti (Gunther, Dorato, Invernale, Zaffiro, Panda):
 ```powershell
-uv run build.py
+uv run build.py --target criceti
 ```
-*(Oppure fai doppio clic sul file [Build_Completo.bat](file:///C:/Users/simem/Desktop/GIT/gunther/Build_Completo.bat))*
+*(Oppure doppio clic su [Build_Completo.bat](./Build_Completo.bat))*
 
-L'eseguibile generato si troverà sempre nella cartella `dist/Gunther.exe` e funzionerà come singolo file completamente autonomo.
+### 🦆 3. Tutte le Paperelle (6 Varianti, con Paperella Bianca)
+Crea l'eseguibile dedicato **`Paperella.exe`** a tema paperella, con beccate, pisellini, pensieri dedicati e piumaggio selezionabile (inclusa la Bianca):
+```powershell
+uv run build.py --target paperelle
+```
+*(Oppure doppio clic su [Build_Paperelle.bat](./Build_Paperelle.bat))*
+
+Gli eseguibili generati si troveranno sempre nella cartella `dist/` (`dist/Gunther.exe` o `dist/Paperella.exe`) e funzioneranno come file singoli 100% autonomi.
+
+---
+
+## 🐾 Come Aggiungere Nuovi Animali in Futuro
+
+Il progetto utilizza un'architettura modulare in [gunther/species.py](./gunther/species.py):
+1. Registra una nuova specie in `SPECIES_REGISTRY` definendo nome, emoji, azioni del menu (cibo, coccole, sonno), pensieri dedicati e palette.
+2. Inserisci o genera gli sprite corrispondenti nella sotto-cartella `assets/sprites/<nuovo_animale>/`.
+3. Il sistema adatterà automaticamente il menu, le coccole, le azioni e i comandi di compilazione per il nuovo animale.

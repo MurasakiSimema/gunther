@@ -15,3 +15,9 @@ dist/
 
 # User local config (preserve defaults)
 config.json
+
+# Generated sprites, icons and previews (built during build/action)
+assets/sprites/
+assets/ducks_preview.png
+assets/duck_icon.png
+assets/duck_icon.ico

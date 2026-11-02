@@ -9,15 +9,20 @@ from gunther.sprites import SpriteManager
 from gunther.behavior import HamsterBehavior, State
 from gunther.bubble import ThoughtBubble
 from gunther.hearts import ParticleManager
-from gunther.messages import MESSAGES
+from gunther.species import get_species, get_species_for_palette
 
 class PetWindow(QWidget):
     def __init__(self):
         super().__init__()
 
         self.config = load_config()
+        current_pal = self.config.get("palette", "gunther")
+        self.species = get_species_for_palette(current_pal)
+        self.pet_name = self.config.get("name", self.species.default_pet_name)
+        self.tray_icon = None
+
         self.sprite_manager = SpriteManager(
-            palette=self.config.get("palette", "gunther"),
+            palette=current_pal,
             scale=self.config.get("scale", 1.0)
         )
         self.behavior = HamsterBehavior()
@@ -42,8 +47,8 @@ class PetWindow(QWidget):
         self.anim_tick = 0
         self.current_frame_idx = 0
 
-        # Load thoughts directly from embedded memory
-        self.messages = list(MESSAGES)
+        # Load thoughts directly from active species
+        self.messages = list(self.species.messages)
 
         # Setup size
         self.update_window_size()
@@ -63,7 +68,9 @@ class PetWindow(QWidget):
         self.thought_timer.start(interval * 1000)
 
         # First greeting thought after 3 seconds!
-        QTimer.singleShot(3000, lambda: self.show_thought("Ciao! Sono Gunther! 🐹❤️"))
+        QTimer.singleShot(3000, lambda: self.show_thought(
+            self.species.initial_greeting.format(name=self.pet_name)
+        ))
 
     def update_window_size(self):
         sw, sh = self.sprite_manager.get_size()
@@ -256,40 +263,54 @@ class PetWindow(QWidget):
             }
         """)
 
-        feed_act = menu.addAction("🌻 Dai un semino a Gunther")
+        feed_act = menu.addAction(self.species.feed_action.format(name=self.pet_name))
         feed_act.triggered.connect(self.feed_hamster)
 
-        pet_act = menu.addAction("🐾 Fai una coccola")
+        pet_act = menu.addAction(self.species.pet_action.format(name=self.pet_name))
         pet_act.triggered.connect(self.pet_hamster)
 
         is_sleeping = (self.behavior.state == State.SLEEP)
-        sleep_text = "☀️ Sveglia Gunther" if is_sleeping else "💤 Fai fare un pisolino"
+        sleep_text = self.species.wake_action.format(name=self.pet_name) if is_sleeping else self.species.sleep_action
         sleep_act = menu.addAction(sleep_text)
         sleep_act.triggered.connect(self.toggle_sleep)
 
-        thought_act = menu.addAction("💬 Cosa stai pensando?")
+        thought_act = menu.addAction(self.species.thought_action.format(name=self.pet_name))
         thought_act.triggered.connect(self.trigger_random_thought)
 
         menu.addSeparator()
 
-        available_pals = self.sprite_manager.get_available_palettes()
-        if len(available_pals) > 1:
-            pal_menu = menu.addMenu("🎨 Manto di Gunther")
-            pal_names = {
-                "gunther": "Gunther (Grigio Scuro Originale) 🐹",
-                "dorato": "Dorato Classico (Siriano)",
-                "invernale": "Bianco Invernale (Snow)",
-                "zaffiro": "Grigio Zaffiro (Russo)",
-                "panda": "Panda Pezzato"
-            }
-            cur_pal = self.config.get("palette", "gunther")
-            for key in ["gunther", "dorato", "invernale", "zaffiro", "panda"]:
-                if key in available_pals:
-                    name = pal_names.get(key, key.capitalize())
+        categorized_pals = self.sprite_manager.get_categorized_palettes()
+        total_pals = sum(len(p) for p in categorized_pals.values())
+        cur_pal = self.config.get("palette", self.species.default_palette)
+        if total_pals > 1:
+            if len(categorized_pals) == 1:
+                # Single species build
+                cat_key, pal_list = next(iter(categorized_pals.items()))
+                sp = get_species(cat_key)
+                pal_menu = menu.addMenu(sp.palette_menu_title)
+                for key in pal_list:
+                    name = sp.palette_names.get(key, key.replace("_", " ").title())
                     act = pal_menu.addAction(name)
                     act.setCheckable(True)
-                    act.setChecked(key == cur_pal)
+                    act.setChecked(key == cur_pal or cur_pal.endswith(f"/{key}"))
                     act.triggered.connect(lambda chk, k=key: self.set_palette(k))
+            else:
+                # Multi-species
+                pal_menu = menu.addMenu("🎨 Manto / Aspetto")
+                cat_order = ["criceto", "paperella"]
+                all_cats = [c for c in cat_order if c in categorized_pals] + [c for c in categorized_pals if c not in cat_order]
+                for cat_key in all_cats:
+                    pal_list = categorized_pals[cat_key]
+                    if not pal_list:
+                        continue
+                    sp = get_species(cat_key)
+                    cat_menu = pal_menu.addMenu(f"{sp.emoji} {sp.name}")
+                    for key in pal_list:
+                        name = sp.palette_names.get(key, key.replace("_", " ").title())
+                        act = cat_menu.addAction(name)
+                        act.setCheckable(True)
+                        act.setChecked(key == cur_pal or cur_pal.endswith(f"/{key}"))
+                        act.triggered.connect(lambda chk, k=key: self.set_palette(k))
 
         size_menu = menu.addMenu("📏 Dimensione")
         sizes = [
@@ -317,13 +338,24 @@ class PetWindow(QWidget):
 
         menu.addSeparator()
 
-        exit_act = menu.addAction("👋 Saluta Gunther (Esci)")
+        exit_act = menu.addAction(self.species.exit_action.format(name=self.pet_name))
         exit_act.triggered.connect(QApplication.instance().quit)
 
         menu.exec(global_pos)
 
     def set_palette(self, pal_key: str):
         self.config["palette"] = pal_key
+        new_species = get_species_for_palette(pal_key)
+        if new_species.id != self.species.id:
+            old_default = self.species.default_pet_name
+            self.species = new_species
+            self.config["species"] = new_species.id
+            if self.pet_name == old_default:
+                self.pet_name = new_species.default_pet_name
+                self.config["name"] = self.pet_name
+            self.messages = list(self.species.messages)
+            if self.tray_icon:
+                self.tray_icon.setToolTip(self.species.tray_tooltip.format(name=self.pet_name))
         save_config(self.config)
         self.sprite_manager.set_palette(pal_key)
         self.update_window_size()

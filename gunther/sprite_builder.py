@@ -6,6 +6,9 @@ Generates adorable pixel art sprites for various animations and color palettes.
 from PIL import Image, ImageDraw
 import os
 
+RESAMPLE_FILTER = getattr(getattr(Image, "Resampling", Image), "NEAREST", Image.NEAREST)
+FLIP_HORIZONTAL = getattr(getattr(Image, "Transpose", Image), "FLIP_LEFT_RIGHT", Image.FLIP_LEFT_RIGHT)
+
 PALETTES = {
     "gunther": {
         "name": "Gunther (Grigio Scuro)",
@@ -492,7 +495,7 @@ def render_pet_frame(palette, step=0):
     return img
 
 
-def generate_all_sprites(output_dir="assets/sprites", scale=3):
+def generate_all_sprites(output_dir="assets/sprites/criceto", scale=3):
     """
     Generates all sprite frames for each palette, scaled up with NEAREST filter
     so pixels remain crisp and vibrant!
@@ -506,42 +509,42 @@ def generate_all_sprites(output_dir="assets/sprites", scale=3):
         # 1. Idle (4 frames)
         for i in range(4):
             f = render_idle_frame(palette, i)
-            f_scaled = f.resize((f.width * scale, f.height * scale), Image.Resampling.NEAREST)
+            f_scaled = f.resize((f.width * scale, f.height * scale), RESAMPLE_FILTER)
             f_scaled.save(os.path.join(pal_dir, f"idle_{i}.png"))
 
         # 2. Walk (4 frames)
         for i in range(4):
             f_right = render_walk_frame(palette, i)
-            f_right_scaled = f_right.resize((f_right.width * scale, f_right.height * scale), Image.Resampling.NEAREST)
+            f_right_scaled = f_right.resize((f_right.width * scale, f_right.height * scale), RESAMPLE_FILTER)
             f_right_scaled.save(os.path.join(pal_dir, f"walk_right_{i}.png"))
 
             # Flip for left walk
-            f_left = f_right.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-            f_left_scaled = f_left.resize((f_left.width * scale, f_left.height * scale), Image.Resampling.NEAREST)
+            f_left = f_right.transpose(FLIP_HORIZONTAL)
+            f_left_scaled = f_left.resize((f_left.width * scale, f_left.height * scale), RESAMPLE_FILTER)
             f_left_scaled.save(os.path.join(pal_dir, f"walk_left_{i}.png"))
 
         # 3. Eat (4 frames)
         for i in range(4):
             f = render_eat_frame(palette, i)
-            f_scaled = f.resize((f.width * scale, f.height * scale), Image.Resampling.NEAREST)
+            f_scaled = f.resize((f.width * scale, f.height * scale), RESAMPLE_FILTER)
             f_scaled.save(os.path.join(pal_dir, f"eat_{i}.png"))
 
         # 4. Sleep (4 frames)
         for i in range(4):
             f = render_sleep_frame(palette, i)
-            f_scaled = f.resize((f.width * scale, f.height * scale), Image.Resampling.NEAREST)
+            f_scaled = f.resize((f.width * scale, f.height * scale), RESAMPLE_FILTER)
             f_scaled.save(os.path.join(pal_dir, f"sleep_{i}.png"))
 
         # 5. Dragged / Picked Up (4 frames)
         for i in range(4):
             f = render_drag_frame(palette, i)
-            f_scaled = f.resize((f.width * scale, f.height * scale), Image.Resampling.NEAREST)
+            f_scaled = f.resize((f.width * scale, f.height * scale), RESAMPLE_FILTER)
             f_scaled.save(os.path.join(pal_dir, f"drag_{i}.png"))
 
         # 6. Pet / Love (4 frames)
         for i in range(4):
             f = render_pet_frame(palette, i)
-            f_scaled = f.resize((f.width * scale, f.height * scale), Image.Resampling.NEAREST)
+            f_scaled = f.resize((f.width * scale, f.height * scale), RESAMPLE_FILTER)
             f_scaled.save(os.path.join(pal_dir, f"pet_{i}.png"))
 
         print(f"Generated sprites for palette: {pkey}")
