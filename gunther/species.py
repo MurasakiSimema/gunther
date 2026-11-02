@@ -90,7 +90,7 @@ SPECIES_REGISTRY: dict[str, SpeciesConfig] = {
         app_id="duck.desktop.companion.1.0",
         tray_tooltip="Paperella da Scrivania 🦆❤️",
         initial_greeting="Quack! Ciao, sono la tua {name}! 🦆❤️",
-        feed_action="🥬 Dai un pisellino a {name}",
+        feed_action="🍞 Dai un po' di pane a {name}",
         pet_action="🪶 Accarezza le piumette di {name}",
         sleep_action="💤 Fai fare un pisolino",
         wake_action="☀️ Sveglia {name}",
@@ -100,7 +100,7 @@ SPECIES_REGISTRY: dict[str, SpeciesConfig] = {
         icon_png="duck_icon.png",
         icon_ico="duck_icon.ico",
         palette_names={
-            "papera_bianca": "Paperella Bianca (Pekin) 🦆⚪",
+            "papera_bianca": "Paperella Bianca 🦆⚪",
             "papera_gialla": "Paperella Gialla Classica 🐥💛",
             "papera_germano": "Germano Reale 🦆🌿",
             "papera_rosa": "Paperella Rosa Pastello 🦆🌸",

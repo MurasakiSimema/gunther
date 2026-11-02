@@ -26,7 +26,7 @@ DUCK_MESSAGES = [
     "Quack! Ti voglio un mondo di bene! 🦆❤️",
     "Hai bevuto un goccio d'acqua fresca oggi? Idratarsi è importante! 💧",
     "Nuoto serena e ti guardo con tanto affetto... 🌊✨",
-    "Sgranocchio un pisellino verde dolce... che delizia! 🥬🥰",
+    "Sgranocchio un po' di pane... che delizia! 🍞🥰",
     "Sei la persona più speciale e dolce del mondo! 🌸",
     "Oggi stai facendo un ottimo lavoro, continua così! 💪",
     "Facciamo una piccola pausa insieme? Ti tengo compagnia! 🐾",
@@ -39,7 +39,7 @@ DUCK_MESSAGES = [
     "Ti mando un bacetto affettuoso con il mio becco arancione! 💋",
     "Quack quack! Ricordati di fare un bel sorriso oggi! 😊",
     "Sbattito d'ali per festeggiare quanto sei brava! 🪶✨",
-    "Guarda che bel pisellino saporito ho trovato per merenda! 🥗",
+    "Guarda che bel pezzo di pane saporito ho trovato per merenda! 🥖",
     "Sei la mia persona preferita in tutto lo stagno! 🦆💖",
     "Che bella giornata per passeggiare sulla barra delle applicazioni! 🐾",
     "Un pisolino a ciambella sulle piume è proprio quello che ci voleva! 💤"
