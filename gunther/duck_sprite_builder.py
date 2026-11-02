@@ -131,9 +131,9 @@ PALETTES = {
     }
 }
 
-PEA_COLOR = (115, 205, 55, 255)
-PEA_LIGHT = (175, 242, 105, 255)
-PEA_SHADOW = (65, 135, 25, 255)
+CRUMB_COLOR = (240, 215, 165, 255)
+CRUMB_LIGHT = (255, 245, 215, 255)
+CRUMB_SHADOW = (195, 155, 110, 255)
 SHADOW_COLOR = (0, 0, 0, 45)
 
 
@@ -327,9 +327,9 @@ def render_walk_frame(palette, step=0):
 
 def render_eat_frame(palette, step=0):
     """
-    Eating yummy green pea treat!
-    step 0: looking excitedly down at pea
-    step 1: head dips down, bill nibbling pea, crumbs fly!
+    Eating yummy breadcrumb treat!
+    step 0: looking excitedly down at bread
+    step 1: head dips down, bill nibbling breadcrumb, crumbs fly!
     step 2: head up, chewing happily with cheeks puffed
     step 3: swallowing happily with closed eyes (^ ^) and sweet sparkles
     """
@@ -389,26 +389,27 @@ def render_eat_frame(palette, step=0):
     draw.rounded_rectangle([14, bill_y, 21, bill_y + 4], radius=2, fill=p["bill"], outline=p["bill_shadow"])
     draw.line([(15, bill_y), (20, bill_y)], fill=p["bill_light"])
 
-    # Pea treat
+
+    # Breadcrumb treat
     if step == 0:
-        # Pea on floor
-        draw.ellipse([16, 27, 20, 31], fill=PEA_COLOR, outline=PEA_SHADOW)
-        draw.point((17, 28), fill=PEA_LIGHT)
+        # Crumb on floor
+        draw.ellipse([16, 27, 20, 31], fill=CRUMB_COLOR, outline=CRUMB_SHADOW)
+        draw.point((17, 28), fill=CRUMB_LIGHT)
     elif step == 1:
-        # Nibbling pea
-        draw.ellipse([16, 25, 20, 29], fill=PEA_COLOR, outline=PEA_SHADOW)
+        # Nibbling crumb
+        draw.ellipse([16, 25, 20, 29], fill=CRUMB_COLOR, outline=CRUMB_SHADOW)
         # Crumbs flying
-        draw.point((14, 23), fill=PEA_LIGHT)
-        draw.point((22, 24), fill=PEA_LIGHT)
+        draw.point((14, 23), fill=CRUMB_LIGHT)
+        draw.point((22, 24), fill=CRUMB_LIGHT)
     elif step == 2:
-        # Chewing: pea half eaten in beak
-        draw.ellipse([16, 22, 19, 25], fill=PEA_COLOR)
-        draw.point((15, 25), fill=PEA_LIGHT)
-        draw.point((21, 23), fill=PEA_LIGHT)
+        # Chewing: crumb half eaten in beak
+        draw.ellipse([16, 22, 19, 25], fill=CRUMB_COLOR)
+        draw.point((15, 25), fill=CRUMB_LIGHT)
+        draw.point((21, 23), fill=CRUMB_LIGHT)
     elif step == 3:
         # Swallow! Happy sparkles
-        draw.point((13, 22), fill=PEA_LIGHT)
-        draw.point((23, 22), fill=PEA_LIGHT)
+        draw.point((13, 22), fill=CRUMB_LIGHT)
+        draw.point((23, 22), fill=CRUMB_LIGHT)
 
     return img
 
